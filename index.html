@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPT Mod Sync v0.5 - Beta</title>
+  <link rel="stylesheet" href="./assets/fa/all.min.css">
+  <link rel="stylesheet" href="./assets/css/main.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header id="header">
+      <div class="header-left">
+        <div class="logo-mark">SM</div>
+        <span class="app-title" style="text-transform:none;" data-i18n="app_title">SPT Mod Sync v0.5 - Beta</span>
+        <span id="server-status" class="version-label server-status-label">—</span>
+      </div>
+      <div class="header-right">
+        <span class="version-label" data-i18n="peers">peers · LAN/VPN</span>
+      </div>
+    </header>
+
+    <!-- Body row -->
+    <div id="body-row">
+      <!-- Sidebar -->
+      <nav id="sidebar">
+        <button class="sidebar-btn" id="btn-server" data-view="server" title="Servidor" data-i18n-title="nav_server">
+          <i class="fa-solid fa-server"></i><span data-i18n="nav_server">SERVIDOR</span>
+        </button>
+        <div class="sidebar-sep"></div>
+        <button class="sidebar-btn" data-view="update" title="Atualizar" data-i18n-title="nav_update">
+          <i class="fa-solid fa-download"></i><span data-i18n="nav_update">UPDATE</span>
+        </button>
+        <button class="sidebar-btn active" data-view="publish" title="Publicar" data-i18n-title="nav_publish">
+          <i class="fa-solid fa-upload"></i><span data-i18n="nav_publish">PUBLISH</span>
+        </button>
+        <div class="sidebar-sep"></div>
+        <div class="sidebar-spacer"></div>
+        <button class="sidebar-btn" id="btn-settings" data-view="settings" title="Opções" data-i18n-title="nav_options">
+          <i class="fa-solid fa-gear"></i><span data-i18n="nav_options">OPÇÕES</span>
+        </button>
+        <button class="sidebar-btn" id="btn-tips" data-view="tips" title="Dicas &amp; Truques" data-i18n-title="nav_tips">
+          <i class="fa-solid fa-lightbulb"></i><span data-i18n="nav_tips">TIPS</span>
+        </button>
+        <div class="sidebar-sep"></div>
+        <button class="sidebar-btn sidebar-about" id="btn-about" data-view="about" title="Sobre" data-i18n-title="nav_about">
+          <i class="fa-solid fa-circle-info"></i><span data-i18n="nav_about">SOBRE</span>
+        </button>
+      </nav>
+
+      <!-- Center panel -->
+      <main id="center-panel">
+        <!-- PUBLISH VIEW -->
+        <section id="view-publish" class="view">
+          <div class="section-header">
+            <span class="section-title" data-i18n="publish">Publicar</span>
+            <span class="section-toggle" id="publish-count">0 selecionados</span>
+          </div>
+          <div id="craft-form-section">
+            <div class="field-group" id="tree-field">
+              <div class="field-label">
+                <span data-i18n="directories">Árvore de ficheiros (SPT)</span>
+                <button class="field-label-action" id="btn-refresh-tree"><i class="fa-solid fa-arrows-rotate"></i> <span data-i18n="refresh">Refrescar</span></button>
+              </div>
+              <div id="file-tree" class="file-tree">
+                <div class="muted" style="padding:8px;" id="tree-empty" data-i18n="tree_empty">A árvore aparece quando o servidor está ligado.</div>
+              </div>
+            </div>
+
+            <div class="field-group" id="selected-mods-field">
+              <div class="field-label"><span data-i18n="selected_mods">Mods selecionados</span></div>
+              <div id="selected-mods" class="selected-mods">
+                <div class="muted" style="padding:8px;" id="selected-mods-empty" data-i18n="no_mods_selected">Nenhum mod selecionado.</div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <div class="field-label"><span data-i18n="version">Versão</span></div>
+              <input type="text" class="tc-input" id="publish-version" placeholder="ex. 1.0.6" data-i18n-ph="version_ph">
+            </div>
+            <div class="field-group">
+              <div class="field-label"><span data-i18n="changelog">Changelog</span></div>
+              <textarea class="tc-input" id="publish-changelog" rows="6" placeholder="[+] Adicionado X&#10;[-] Removido Y" data-i18n-ph="changelog_ph"></textarea>
+            </div>
+
+            <div id="patch-file-label" class="patch-file-label muted" style="display:none;"></div>
+            <div class="patch-progress" id="patch-progress">
+              <div class="patch-progress-bar" id="patch-bar"></div>
+              <div class="patch-progress-text" id="patch-pct">0%</div>
+            </div>
+
+            <div class="make-patch-row">
+              <button class="field-label-action" id="btn-make-patch" style="width:48%;padding:12px;" disabled><i class="fa-solid fa-file-zipper"></i> <span data-i18n="make_patch">Fazer Patch</span></button>
+
+              <div id="patch-info" class="patch-info" style="display:none;">
+                <div class="field-label"><span data-i18n="patch_info">Informação do patch</span></div>
+                <div class="patch-info-row">
+                  <div class="patch-info-item"><span class="patch-info-key" data-i18n="patch_file">Ficheiro</span><span class="patch-info-val" id="patch-file">—</span></div>
+                  <div class="patch-info-item"><span class="patch-info-key" data-i18n="patch_size">Tamanho</span><span class="patch-info-val" id="patch-size">—</span></div>
+                  <div class="patch-info-item"><span class="patch-info-key" data-i18n="patch_modified">Data/Hora</span><span class="patch-info-val" id="patch-modified">—</span></div>
+                </div>
+              </div>
+            </div>
+
+            <button class="field-label-action" id="btn-deploy" style="width:100%;padding:10px;margin-top:12px;" disabled><i class="fa-solid fa-box-archive"></i> <span data-i18n="deploy">Publicar patch</span></button>
+            <div class="progress-container" id="publish-progress" style="display:none;margin-top:12px;">
+              <div class="progress-bar" id="publish-bar"></div>
+              <div class="progress-text" id="publish-pct">0%</div>
+            </div>
+            <div id="publish-status" class="muted" style="margin-top:8px;font-size:12px;"></div>
+          </div>
+        </section>
+
+        <!-- UPDATE VIEW -->
+        <section id="view-update" class="view" style="display:none;">
+          <div class="section-header">
+            <span class="section-title" data-i18n="update">Actualizar</span>
+          </div>
+          <div id="craft-form-section">
+            <!-- Info do patch disponível (sempre visível; campos preenchidos após verificar) -->
+            <div class="update-info-card" id="update-info-card">
+              <div class="update-info-row"><span class="update-info-key" data-i18n="patch_name">Patch</span><span class="update-info-val" id="update-patch-name">—</span></div>
+              <div class="update-info-row"><span class="update-info-key" data-i18n="version">Versão</span><span class="update-info-val" id="update-patch-version">—</span></div>
+              <div class="update-info-row"><span class="update-info-key" data-i18n="size">Tamanho</span><span class="update-info-val" id="update-patch-size">—</span></div>
+              <div class="update-info-row"><span class="update-info-key" data-i18n="speed">Velocidade</span><span class="update-info-val" id="update-patch-speed">—</span></div>
+              <div class="update-info-changelog" id="update-patch-changelog-wrap" style="display:none;">
+                <span class="update-info-key" data-i18n="changelog">Changelog</span>
+                <pre class="update-changelog-text" id="update-patch-changelog"></pre>
+              </div>
+            </div>
+
+            <!-- Barra de progresso (sempre visível) -->
+            <div class="progress-container" id="update-progress" style="margin-top:18px;">
+              <div class="progress-bar" id="update-bar"></div>
+              <div class="progress-text" id="update-pct">0%</div>
+            </div>
+            <div id="update-status" class="muted" style="margin-top:10px;font-size:12px;"></div>
+
+            <!-- Botões (em baixo, com espaço) -->
+            <button class="field-label-action" id="btn-download-update" style="width:100%;padding:14px;margin-top:22px;"><i class="fa-solid fa-magnifying-glass" id="btn-download-update-icon"></i> <span id="btn-download-update-label" data-i18n="check">Verificar</span></button>
+            <button class="field-label-action" id="btn-update" style="width:100%;padding:14px;margin-top:14px;" disabled><i class="fa-solid fa-square-up"></i> <span data-i18n="update">Actualizar</span></button>
+          </div>
+        </section>
+
+        <!-- SERVER VIEW -->
+        <section id="view-server" class="view" style="display:none;">
+          <div class="section-header">
+            <span class="section-title" data-i18n="server">Servidor</span>
+            <span class="section-toggle" id="server-view-status">desligado</span>
+          </div>
+
+          <div class="server-card" id="server-card">
+            <div class="server-card-glow"></div>
+            <div class="server-card-top">
+              <div class="server-status-orb" id="server-orb">
+                <span class="server-led" id="server-led"></span>
+              </div>
+              <div class="server-card-headings">
+                <span class="server-card-name" id="server-name" data-i18n="server_card_name">Servidor de patches</span>
+                <span class="server-card-state" id="server-card-state" data-i18n="off">Desligado</span>
+              </div>
+            </div>
+
+            <div class="server-meta">
+              <div class="server-meta-row">
+                <i class="fa-solid fa-network-wired"></i>
+                <span class="server-meta-label" data-i18n="server_ip">IP do servidor</span>
+                <span class="server-meta-value" id="server-ip-value">127.0.0.1:8080</span>
+              </div>
+              <div class="server-meta-row">
+                <i class="fa-solid fa-folder-tree"></i>
+                <span class="server-meta-label" data-i18n="spt_path">Caminho do SPT</span>
+                <span class="server-meta-value" id="server-spt-value">—</span>
+              </div>
+            </div>
+
+            <button class="server-toggle-btn off" id="btn-server-toggle">
+              <span class="server-toggle-icon"><i class="fa-solid fa-power-off"></i></span>
+              <span id="server-btn-state" data-i18n="server_off">Servidor desligado</span>
+            </button>
+            <p class="server-card-hint" data-i18n="server_card_hint">Liga/desliga o servidor de patches na porta 8080. O teu colega só recebe updates com isto ligado.</p>
+          </div>
+
+          <div class="server-log-wrap">
+            <div class="server-log-header">
+              <span class="server-log-title" data-i18n="server_log">Terminal do servidor</span>
+              <button class="server-log-clear" id="btn-log-clear" title="Limpar"><i class="fa-solid fa-eraser"></i></button>
+            </div>
+            <div class="server-log" id="server-log"></div>
+          </div>
+        </section>
+
+        <!-- ABOUT (mini-janela modal) -->
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Atualização da app concluída -->
+  <div id="modal-app-update" class="modal-overlay" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-labelledby="lbl-app-update-title">
+      <div class="modal-logo-row">
+        <div class="logo-mark" style="width:48px;height:48px;font-size:18px;"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+          <h2 class="modal-section-title" id="lbl-app-update-title" data-i18n="app_update_title">Atualização concluída</h2>
+        </div>
+      </div>
+      <p class="modal-desc" id="app-update-msg" data-i18n="app_update_installed">Update instalado! Liga a app manualmente para aplicar.</p>
+      <button class="field-label-action" id="btn-app-update-launch" style="width:100%;padding:10px;margin-top:10px;" data-i18n="app_update_launch_manually">Ligar manualmente</button>
+    </div>
+  </div>
+
+  <!-- Modal "Actualização disponível" (ao iniciar, quando o checkbox está ligado) -->
+  <div id="modal-app-update-available" class="modal-overlay" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-labelledby="lbl-app-update-available-title">
+      <div class="modal-logo-row">
+        <div class="logo-mark" style="width:48px;height:48px;font-size:18px;"><i class="fa-solid fa-circle-arrow-up"></i></div>
+        <div>
+          <h2 class="modal-section-title" id="lbl-app-update-available-title" data-i18n="app_update_available_title">Actualização disponível</h2>
+        </div>
+      </div>
+      <p class="modal-desc" id="app-update-available-msg"></p>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="field-label-action" id="btn-app-update-now" style="flex:1;padding:10px;"><i class="fa-solid fa-download"></i> <span data-i18n="update_now">Atualizar agora</span></button>
+        <button class="field-label-action" id="btn-app-update-later" style="flex:1;padding:10px;"><span data-i18n="later">Agora não</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Sobre -->
+  <div id="modal-about" class="modal-overlay" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-labelledby="modal-about-title">
+      <button class="modal-close" id="btn-modal-about-close" aria-label="Fechar">✕</button>
+      <div class="modal-logo-row">
+        <div class="logo-mark" style="width:48px;height:48px;font-size:18px;">SM</div>
+        <div>
+          <h1 class="modal-app-title" id="modal-about-title" data-i18n="app_name">SPT Mod Sync</h1>
+          <span class="modal-version" data-i18n="app_title">v0.5 - Beta</span>
+        </div>
+      </div>
+      <p class="modal-desc" data-i18n="about_desc">
+        Partilha de mods SPT entre peers, sem browser. Publica patches, recebe updates
+        do teu colega (ou de ti próprio) e mantém tudo sincronizado via LAN ou VPN (Radmin).
+      </p>
+      <div class="modal-footer-line" data-i18n="about_footer">
+        Feito para a comunidade SPT modding
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tips -->
+  <div id="modal-tips" class="modal-overlay" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-labelledby="lbl-tips-title">
+      <button class="modal-close" id="btn-modal-tips-close" aria-label="Fechar">✕</button>
+      <h2 class="modal-section-title" id="lbl-tips-title" data-i18n="tips_title">Dicas &amp; Truques</h2>
+      <ul class="modal-tips-list" id="tips-list"></ul>
+    </div>
+  </div>
+
+  <!-- Modal Definições -->
+  <div id="modal-settings" class="modal-overlay">
+    <div class="modal-card" role="dialog" aria-labelledby="lbl-settings-title">
+      <button class="modal-close" id="btn-settings-close">✕</button>
+      <div class="modal-logo-row">
+        <div class="logo-mark" style="width:48px;height:48px;font-size:18px;">SM</div>
+        <div>
+          <div class="modal-app-title" id="lbl-settings-title" data-i18n="settings_title">Definições</div>
+          <p class="settings-hint" data-i18n="app_title">SPT Mod Sync v0.5 - Beta</p>
+        </div>
+      </div>
+
+      <div class="settings-body">
+        <div class="settings-row" style="flex-direction:row;align-items:center;gap:10px;">
+          <label class="custom-item-label" style="margin:0;">
+            <input type="checkbox" class="custom-item-check" id="server-toggle">
+            <span id="lbl-server-toggle" data-i18n="autostart">Ligar servidor ao iniciar</span>
+          </label>
+          <span id="server-toggle-state" class="settings-hint" data-i18n="off">Desligado</span>
+        </div>
+
+        <div class="settings-row">
+          <span data-i18n="server_ip">IP do servidor</span>
+          <input type="text" class="settings-input" id="cfg-server-ip" placeholder="ex. 26.10.20.5:8080" data-i18n-ph="server_ip_ph">
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+          <span data-i18n="spt_path">Caminho do SPT</span>
+          <div style="display:flex;gap:8px;">
+            <input type="text" class="settings-input" id="cfg-spt-path" placeholder="ex. J:\Jogos\SPT-4.0.13" style="flex:1;" data-i18n-ph="spt_path_ph">
+            <button class="field-label-action" id="btn-browse" title="Procurar pasta" style="white-space:nowrap;" data-i18n-title="browse"><i class="fa-solid fa-folder-open"></i> <span data-i18n="browse">Procurar</span></button>
+          </div>
+          <span class="settings-hint" id="spt-detect">—</span>
+        </div>
+        <div class="settings-row" style="flex-direction:row;align-items:center;gap:10px;">
+          <span id="lbl-installed" style="margin:0;" data-i18n="installed_version">Versão instalada</span>
+          <span class="settings-input-readonly" id="spt-version">—</span>
+          <span class="settings-hint" style="margin:0 0 0 auto;" id="lbl-launcher" data-i18n="launcher_lbl">Launcher:</span>
+          <span id="spt-launcher">—</span>
+        </div>
+        <div class="settings-row">
+          <span data-i18n="language">Idioma</span>
+          <select id="cfg-language" class="tc-select">
+            <option value="pt-pt">Português (PT)</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <p class="settings-hint" data-i18n="autostart_hint">Se ligado, o servidor arranca automaticamente quando abres a app.</p>
+
+        <div class="settings-sep"></div>
+        <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+          <span data-i18n="app_updates">Atualizações da app</span>
+          <label class="custom-item-label" style="margin:2px 0 0;">
+            <input type="checkbox" class="custom-item-check" id="check-app-update-on-start">
+            <span data-i18n="check_app_update_on_start">Verificar actualizações ao iniciar</span>
+          </label>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="settings-hint" id="app-version"><span data-i18n="current_version">Versão actual:</span> <b id="app-current-version">—</b></span>
+            <button class="field-label-action" id="btn-check-app-update" style="white-space:nowrap;margin-left:auto;"><i class="fa-solid fa-rotate" id="btn-check-icon"></i> <span data-i18n="verify" id="btn-check-label">Verificar</span></button>
+          </div>
+          <div id="appupdate-available" class="settings-hint" style="display:none;"></div>
+          <div id="appupdate-status" class="muted" style="font-size:12px;"></div>
+        </div>
+      </div>
+
+      <div class="patch-progress appupdate-progress disabled" id="appupdate-progress" style="margin-top:4px;margin-bottom:12px;">
+        <div class="patch-progress-bar" id="appupdate-bar"></div>
+        <div class="patch-progress-text" id="appupdate-pct">0%</div>
+      </div>
+
+      <button class="field-label-action" id="btn-settings-save" style="width:100%;padding:10px;" data-i18n="save">Guardar</button>
+    </div>
+  </div>
+
+  <script type="module" src="./assets/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+/* Tema: Tarkov Green — variação tática verde/oliva */
+[data-theme="tarkov-green"] {
+  --bg: #0c100d;
+  --panel: #141a15;
+  --panel-2: #1a211b;
+  --border: #283328;
+  --border-soft: rgba(120,200,140,.10);
+  --gold: #7ec48a;
+  --gold-bright: #a8e0b0;
+  --gold-deep: #4a7a55;
+  --text: #d4e2d8;
+  --muted: #7e8a82;
+  --danger: #d36242;
+  --danger-bg: #1a1411;
+  --ok: #2ed44a;
+  --warn: #e02424;
+  --btn-grad: linear-gradient(135deg, #2f4a3a, #1b2d24);
+  --btn-grad-hover: linear-gradient(135deg, #3a5a47, #22382d);
+  --sweep: linear-gradient(120deg, transparent 0%, rgba(168,224,176,.18) 50%, transparent 100%);
+}

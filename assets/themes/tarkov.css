@@ -1,0 +1,26 @@
+/* Tema: Tarkov (dourado/carbon) — base da app ModSync
+   Igual à TarkovCraftApp. Ativa via <body data-theme="tarkov"> */
+:root,
+[data-theme="tarkov"] {
+  --bg: #0d0f12;
+  --panel: #16191e;
+  --panel-2: #1c2026;
+  --border: #2a2f38;
+  --border-soft: rgba(255,255,255,.08);
+  --gold: #c8aa6e;
+  --gold-bright: #f0c75e;
+  --gold-deep: #8a6d3a;
+  --text: #d6d9de;
+  --muted: #8a909c;
+  --danger: #d36242;
+  --danger-bg: #1a1111;
+  --ok: #2ed44a;
+  --warn: #e02424;
+  --radius: 4px;
+  --font-ui: "Teko", "Bender", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Consolas", "Courier New", monospace;
+  --btn-grad: linear-gradient(135deg, #5A6246, #2A2F22);
+  --btn-grad-hover: linear-gradient(135deg, #6b7453, #333a29);
+  --sweep: linear-gradient(120deg, transparent 0%, rgba(240,199,94,.18) 50%, transparent 100%);
+  --anim-speed: .2s;
+}

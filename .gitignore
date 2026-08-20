@@ -1,0 +1,27 @@
+# Build artifacts
+build/
+dist/
+*.spec
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Logs
+Data/Logs/
+*.log
+
+# Binaries / test exes
+*.exe
+
+# Temp / OS
+.DS_Store
+Thumbs.db
+
+# Local ini with secrets (keep example instead)
+# SPTModSync.ini
+
+# Server temp files
+Data/Server/files/*.zip
+Data/Server/files/*.tmp

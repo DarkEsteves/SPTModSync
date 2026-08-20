@@ -1,0 +1,20 @@
+/* Tema: Tarkov Blue — variação fria do tema base */
+[data-theme="tarkov-blue"] {
+  --bg: #0b0f14;
+  --panel: #131a22;
+  --panel-2: #18222e;
+  --border: #24323f;
+  --border-soft: rgba(120,180,255,.10);
+  --gold: #5fa8d8;
+  --gold-bright: #8fc8ef;
+  --gold-deep: #3a6a8a;
+  --text: #d4dcea;
+  --muted: #7e8a9a;
+  --danger: #d36242;
+  --danger-bg: #1a1411;
+  --ok: #2ed44a;
+  --warn: #e02424;
+  --btn-grad: linear-gradient(135deg, #2f4a5e, #1b2d3a);
+  --btn-grad-hover: linear-gradient(135deg, #3a5a72, #22384a);
+  --sweep: linear-gradient(120deg, transparent 0%, rgba(143,200,239,.18) 50%, transparent 100%);
+}
