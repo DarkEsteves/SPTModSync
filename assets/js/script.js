@@ -506,21 +506,19 @@ async function updateServerStatus() {
   }
 
   // Publish ativo quando o servidor está ligado (quem envia).
-  // Botão "Verificar/Download" da aba Update ativo quando o servidor está DESLIGADO
-  // (quem recebe patches não tem servidor próprio ligado). Desativa + tira animação quando ligado.
   if (deploy) deploy.disabled = !running;
+  // Botão "Verificar/Download" da aba Update: SEMPRE ativo (precisa do servidor para verificar)
   const dlBtn = document.getElementById('btn-download-update');
   if (dlBtn) {
-    dlBtn.disabled = running;          // ativo só quando servidor DESLIGADO
-    dlBtn.classList.toggle('disabled', running);
+    dlBtn.disabled = false;
+    dlBtn.classList.remove('disabled');
   }
 
-  // Botão "UPDATE" da sidebar: ativo só quando o servidor está DESLIGADO
-  // (quem recebe patches não tem servidor próprio ligado). Desativa + tira animação quando ligado.
+  // Botão "UPDATE" da sidebar: SEMPRE ativo (quem recebe também precisa do servidor ligado)
   const sbUpdate = document.querySelector('.sidebar-btn[data-view="update"]');
   if (sbUpdate) {
-    sbUpdate.classList.toggle('wip', running);
-    sbUpdate.style.pointerEvents = running ? 'none' : '';
+    sbUpdate.classList.remove('wip');
+    sbUpdate.style.pointerEvents = '';
   }
   // Botão "PUBLICAR" da sidebar: ativo só quando o servidor está LIGADO
   // (para publicar o patch precisas do servidor a servir). Desativa quando desligado.
