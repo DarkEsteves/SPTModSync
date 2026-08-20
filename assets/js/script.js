@@ -281,6 +281,27 @@ function showView(name) {
   document.getElementById('view-update').style.display = name === 'update' ? 'flex' : 'none';
   document.getElementById('view-server').style.display = name === 'server' ? 'flex' : 'none';
   if (name === 'server') updateServerStatus();
+  if (name === 'publish') autoDetectPatch();
+}
+
+function autoDetectPatch() {
+  // Verifica se há patch na pasta e atualiza o card + botão PUBLICAR
+  if (!api()) return;
+  api().patch_exists().then(pe => {
+    const card = document.getElementById('patch-info');
+    const deployBtn = document.getElementById('btn-deploy');
+    if (pe && pe.exists) {
+      document.getElementById('patch-file').textContent = pe.filename;
+      document.getElementById('patch-size').textContent = pe.size ? pe.size + ' MB' : '—';
+      document.getElementById('patch-modified').textContent = pe.modified || '—';
+      if (deployBtn) deployBtn.disabled = false;
+    } else {
+      document.getElementById('patch-file').textContent = '—';
+      document.getElementById('patch-size').textContent = '—';
+      document.getElementById('patch-modified').textContent = '—';
+      if (deployBtn) deployBtn.disabled = true;
+    }
+  }).catch(() => {});
 }
 
 // ---------- Modais (Sobre / Tips) ----------

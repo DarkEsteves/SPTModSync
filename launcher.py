@@ -433,7 +433,9 @@ class Api:
                 return {"exists": False, "path": ""}
             zips.sort(key=lambda f: os.path.getmtime(os.path.join(PATCH_DIR, f)), reverse=True)
             newest = os.path.join(PATCH_DIR, zips[0])
-            return {"exists": True, "path": newest, "filename": zips[0]}
+            size_mb = round(os.path.getsize(newest) / (1024 * 1024), 1)
+            modified = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(newest)))
+            return {"exists": True, "path": newest, "filename": zips[0], "size": size_mb, "modified": modified}
         except Exception:
             return {"exists": False, "path": ""}
 
