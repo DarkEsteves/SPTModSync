@@ -88,6 +88,7 @@ LOG_STRINGS = {
         "download_start": "Download iniciado de %s",
         "server_dl": "Download servido: %s (%s MB) em %ss (%s MB/s) | IP=%s",
         "server_dl_err": "Erro ao servir ficheiro %s | IP=%s",
+        "select_patch_err": "Erro ao abrir seletor de patch: %s",
     },
     "en": {
         "server_start": "Patch server started on port 8080",
@@ -105,6 +106,7 @@ LOG_STRINGS = {
         "download_start": "Download started from %s",
         "server_dl": "Served download: %s (%s MB) in %ss (%s MB/s) | IP=%s",
         "server_dl_err": "Error serving file %s | IP=%s",
+        "select_patch_err": "Error opening patch selector: %s",
     },
 }
 
@@ -535,7 +537,7 @@ class Api:
                     log_event("publish_reg_err", "ERR", reg.get("error", "erro"))
                     return
                 _emit("publish_progress", {"msg": "✔ Publicado!", "pct": 100, "done": True})
-                log_event("publish_done", "OK", version, patch_info.get("items", 0), host)
+                log_event("publish_done", "OK", version, patch_info.get("items", 0), external_host)
             except Exception as e:
                 _emit("publish_progress", {"msg": "❌ " + str(e), "pct": 0, "error": True})
                 log_event("publish_err", "ERR", str(e))

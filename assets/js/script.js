@@ -1080,7 +1080,13 @@ async function init() {
 
   document.getElementById('btn-load-preset').addEventListener('click', async () => {
     if (!api()) return;
-    const path = await api().select_patch_file();
+    let path = null;
+    try {
+      path = await api().select_patch_file();
+    } catch (e) {
+      alert('Erro ao abrir seletor: ' + e);
+      return;
+    }
     if (!path) return;  // utilizador cancelou
     const res = await api().load_preset_patch(path);
     if (res && res.ok) {
