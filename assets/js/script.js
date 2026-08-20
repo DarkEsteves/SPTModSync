@@ -514,11 +514,12 @@ async function updateServerStatus() {
     dlBtn.classList.remove('disabled');
   }
 
-  // Botão "UPDATE" da sidebar: SEMPRE ativo (quem recebe também precisa do servidor ligado)
+  // Botão "UPDATE" da sidebar: mesmo comportamento que PUBLICAR
+  // (ativo só quando o servidor está ligado — cliente e servidor precisam dele)
   const sbUpdate = document.querySelector('.sidebar-btn[data-view="update"]');
   if (sbUpdate) {
-    sbUpdate.classList.remove('wip');
-    sbUpdate.style.pointerEvents = '';
+    sbUpdate.classList.toggle('wip', !running);
+    sbUpdate.style.pointerEvents = !running ? 'none' : '';
   }
   // Botão "PUBLICAR" da sidebar: ativo só quando o servidor está LIGADO
   // (para publicar o patch precisas do servidor a servir). Desativa quando desligado.
