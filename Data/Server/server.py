@@ -21,13 +21,17 @@ def get_local_ip():
 
 app = Flask(__name__)
 
-# BASE_DIR: congelado (exe) -> dados em exe\Data\Server (gravável, junto ao exe).
-# Dev -> pasta onde este server.py está.
+# BASE_DIR: sempre junto ao exe (gravável), independentemente de onde
+# este server.py está a correr (Source, _MEIPASS, etc).
 if getattr(sys, "frozen", False):
     _EXE_DIR = os.path.dirname(os.path.abspath(sys.executable))
-    BASE_DIR = os.path.join(_EXE_DIR, "Data", "Server")
 else:
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    # Quando importado pelo launcher (que já definiu EXE_DIR), usar esse.
+    _EXE_DIR = os.path.dirname(os.path.abspath(sys.executable))
+    if not os.path.basename(_EXE_DIR).lower().endswith('.exe'):
+        # Provavelmente a correr de Source; usar a pasta do exe real se injetada
+        _EXE_DIR = getattr(sys, '_EXE_DIR_OVERRIDE', _EXE_DIR)
+BASE_DIR = os.path.join(_EXE_DIR, "Data", "Server")
 os.makedirs(BASE_DIR, exist_ok=True)
 
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'files')
@@ -533,7 +537,9 @@ def register_version():
         files_to_delete = data.get('files_to_delete', [])
         server_ip = data.get('server_ip') or request.host
         # Se for localhost, detetar IP de rede automaticamente
-        if server_ip in ('127.0.0.1', 'localhost', '127.0.0.1:8080', 'localhost:8080'):
+        # Mas manter IP externo (ex.: VPN) se for fornecido
+        host_only = server_ip.split(':')[0]
+        if host_only in ('127.0.0.1', 'localhost', ''):
             local_ip = get_local_ip()
             server_ip = f"{local_ip}:8080"
 

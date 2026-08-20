@@ -1,1 +1,8 @@
-[]
+[
+    {
+        "Version": "1.0.0",
+        "Download": "http://26.105.141.112:8080/files/Patch-1.0.zip",
+        "Changelog": "teste",
+        "files_to_delete": []
+    }
+]

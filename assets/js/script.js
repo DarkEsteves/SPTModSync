@@ -1080,21 +1080,15 @@ async function init() {
 
   document.getElementById('btn-load-preset').addEventListener('click', async () => {
     if (!api()) return;
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.zip';
-    input.onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const res = await api().load_preset_patch(file.path);
-      if (res && res.ok) {
-        alert('Patch carregado: ' + res.filename);
-        autoDetectPatch();
-      } else {
-        alert('Erro: ' + (res && res.error || 'erro'));
-      }
-    };
-    input.click();
+    const path = await api().select_patch_file();
+    if (!path) return;  // utilizador cancelou
+    const res = await api().load_preset_patch(path);
+    if (res && res.ok) {
+      alert('Patch carregado: ' + res.filename);
+      autoDetectPatch();
+    } else {
+      alert('Erro: ' + (res && res.error || 'erro'));
+    }
   });
 
   document.getElementById('btn-deploy').addEventListener('click', async () => {

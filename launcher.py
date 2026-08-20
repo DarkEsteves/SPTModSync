@@ -244,6 +244,8 @@ def start_server():
             server_py = os.path.join(BUNDLE_DIR, "Data", "Server", "server.py")
         if not os.path.isfile(server_py):
             return {"ok": False, "error": f"server.py não existe: {server_py}"}
+        # Garante que o server grava em EXE_DIR/Data/Server (não em _MEIPASS)
+        sys._EXE_DIR_OVERRIDE = EXE_DIR
         spec = importlib.util.spec_from_file_location("modsync_server", server_py)
         srv = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(srv)
@@ -466,6 +468,21 @@ class Api:
             pass
         return None
 
+    def select_patch_file(self):
+        import webview as _wv
+        try:
+            w = _wv.windows[0]
+            res = w.create_file_dialog(
+                _wv.OPEN_DIALOG,
+                allow_multiple=False,
+                file_types=("Patch ZIP (*.zip)", "*.zip")
+            )
+            if res and len(res) > 0:
+                return res[0]
+        except Exception as e:
+            log_event("select_patch_err", "ERR", str(e))
+        return None
+
     def load_preset_patch(self, zip_path):
         """Carrega um patch pré-feito: copia para a pasta de patches e regista."""
         try:
@@ -490,14 +507,18 @@ class Api:
             return {"ok": False, "error": str(e)}
 
     def publish_from_patch(self, patch_info, version, changelog):
-        if not patch_info or not patch_info.get("ok"):
+        # patch_info pode vir de patch_exists() (sem "ok") ou de make_patch (com "ok")
+        valid = patch_info and (patch_info.get("ok") or patch_info.get("path") or patch_info.get("filename"))
+        if not valid:
             return {"ok": False, "error": "Faz primeiro o patch"}
-        zip_path = patch_info.get("zip_path") or self.patch_exists().get("path")
+        zip_path = patch_info.get("zip_path") or patch_info.get("path") or self.patch_exists().get("path")
         if not zip_path or not os.path.isfile(zip_path):
             return {"ok": False, "error": "O zip do patch já não existe. Faz o patch novamente."}
         fname = patch_info.get("filename") or os.path.basename(zip_path)
-        # Enviar para o servidor LOCAL (127.0.0.1:8080), não para o IP do colega
+        # Upload vai para o servidor LOCAL (127.0.0.1:8080)
         host = "127.0.0.1:8080"
+        # O registo usa o IP externo (da INI) para o colega poder fazer download
+        external_host = self.cfg["SPTModSync"].get("server_ip", "127.0.0.1:8080")
 
         def run():
             try:
@@ -508,7 +529,7 @@ class Api:
                     log_event("publish_upload_err", "ERR", res.get("error", "erro"))
                     return
                 _emit("publish_progress", {"msg": "A registar versão...", "pct": 95})
-                reg = self._register_version(host, fname, version, changelog)
+                reg = self._register_version(external_host, fname, version, changelog)
                 if not reg["ok"]:
                     _emit("publish_progress", {"msg": "❌ " + reg.get("error", "erro"), "pct": 0, "error": True})
                     log_event("publish_reg_err", "ERR", reg.get("error", "erro"))
