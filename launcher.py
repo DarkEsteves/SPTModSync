@@ -475,7 +475,7 @@ class Api:
             res = w.create_file_dialog(
                 _wv.OPEN_DIALOG,
                 allow_multiple=False,
-                file_types=("Patch ZIP (*.zip)", "*.zip")
+                file_types=("Patch ZIP (*.zip)",)
             )
             if res and len(res) > 0:
                 return res[0]
