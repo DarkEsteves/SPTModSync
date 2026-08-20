@@ -387,7 +387,7 @@ class Api:
         if not selected_paths:
             return {"ok": False, "error": "Nenhum ficheiro selecionado"}
         if not version:
-            return {"ok": False, "error": "Falta a versão"}
+            version = "1.0.0"
         spt = self.cfg["SPTModSync"].get("spt_path", "")
         if not spt:
             return {"ok": False, "error": "Falta a pasta SPT"}
@@ -444,9 +444,8 @@ class Api:
         if not zip_path or not os.path.isfile(zip_path):
             return {"ok": False, "error": "O zip do patch já não existe. Faz o patch novamente."}
         fname = patch_info.get("filename") or os.path.basename(zip_path)
-        host = _norm_host(self.cfg["SPTModSync"].get("server_ip", ""))
-        if not host:
-            return {"ok": False, "error": "Falta o IP do servidor"}
+        # Enviar para o servidor LOCAL (127.0.0.1:8080), não para o IP do colega
+        host = "127.0.0.1:8080"
 
         def run():
             try:

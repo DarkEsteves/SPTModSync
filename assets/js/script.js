@@ -1041,8 +1041,7 @@ async function init() {
   document.getElementById('btn-make-patch').addEventListener('click', async () => {
     const sel = Array.from(SMS.selected);
     if (!sel.length) { alert(t('select_files_first')); return; }
-    const version = document.getElementById('publish-version').value.trim();
-    if (!version) { alert(t('missing_version')); return; }
+    const version = document.getElementById('publish-version').value.trim() || '1.0.0';
     if (!api()) return;
     document.getElementById('patch-bar').style.width = '0%';
     document.getElementById('patch-pct').textContent = '0%';
@@ -1052,12 +1051,11 @@ async function init() {
   });
 
   document.getElementById('btn-deploy').addEventListener('click', async () => {
-    const version = document.getElementById('publish-version').value.trim();
+    const version = document.getElementById('publish-version').value.trim() || '1.0.0';
     const changelog = document.getElementById('publish-changelog').value.trim();
     if (!api()) return;
     const pe = await api().patch_exists();
     if (!pe || !pe.exists) { alert('Faz primeiro o patch com o botão Fazer Patch.'); return; }
-    if (!version) { alert(t('missing_version')); return; }
     // o patchInfo vem do evento patch_progress (done); se não tiver, usa info mínima
     const info = patchInfo || { ok: true, zip_path: pe.path, filename: 'patch.zip', size: 0, items: 0 };
     api().publish_from_patch(info, version, changelog);
