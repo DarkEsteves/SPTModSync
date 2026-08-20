@@ -23,7 +23,7 @@ if exist "SPTModSync.spec" del /f /q "SPTModSync.spec" 2>nul
 echo [2/3] A compilar SPTModSync.exe...
 %PYINSTALLER% ^
   --onefile --noconsole --name SPTModSync --clean ^
-  --icon=qingniao-clue.ico ^
+  --icon=Data/Assets/qingniao-clue.ico ^
   --hidden-import=webview.platforms.edgechromium ^
   --hidden-import=clr_loader ^
   --hidden-import=webview ^
@@ -52,6 +52,12 @@ copy /y "dist\SPTModSync.exe" "..\exe\SPTModSync.exe" > nul
 REM Lang externo (i18n editável em runtime)
 if not exist "..\exe\Data\Lang" mkdir "..\exe\Data\Lang"
 xcopy /E /I /Y "Data\Lang" "..\exe\Data\Lang" > nul
+
+REM Ícones da app (UI + janela)
+if not exist "..\exe\Data\Assets" mkdir "..\exe\Data\Assets"
+copy /y "Data\Assets\qingniao-clue.ico" "..\exe\Data\Assets\qingniao-clue.ico" > nul
+copy /y "Data\Assets\qingniao-clue.png" "..\exe\Data\Assets\qingniao-clue.png" > nul
+copy /y "Data\Assets\qingniao-clue.svg" "..\exe\Data\Assets\qingniao-clue.svg" > nul
 
 REM Pasta Server: SEM server.py (vai dentro do exe). Cria-se versions.json + files/ vazios.
 if not exist "..\exe\Data\Server" mkdir "..\exe\Data\Server"
