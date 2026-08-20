@@ -23,6 +23,7 @@ if exist "SPTModSync.spec" del /f /q "SPTModSync.spec" 2>nul
 echo [2/3] A compilar SPTModSync.exe...
 %PYINSTALLER% ^
   --onefile --noconsole --name SPTModSync --clean ^
+  --icon=qingniao-clue.ico ^
   --hidden-import=webview.platforms.edgechromium ^
   --hidden-import=clr_loader ^
   --hidden-import=webview ^

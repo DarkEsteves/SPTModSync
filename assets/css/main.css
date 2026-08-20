@@ -930,6 +930,15 @@ textarea.tc-input { resize: none; overflow-y: auto; }
   to   { opacity: 0; transform: translateY(16px); }
 }
 
+/* Ícone da app na UI (substitui o logo "SM" por imagem) */
+.logo-mark-img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 6px;
+  flex: 0 0 auto;
+}
+
 /* ── Sidebar tooltip ── */
 .sidebar-btn[data-tooltip]:hover::after {
   content: attr(data-tooltip);
