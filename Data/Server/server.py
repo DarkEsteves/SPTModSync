@@ -1,11 +1,23 @@
 import os
 import sys
 import json
+import socket
 import threading
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template_string, redirect
 from werkzeug.utils import secure_filename
 from waitress import serve
+
+def get_local_ip():
+    """Deteta o IP de rede local (não 127.0.0.1)."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
 
 app = Flask(__name__)
 
@@ -520,6 +532,10 @@ def register_version():
         changelog = data.get('changelog', '')
         files_to_delete = data.get('files_to_delete', [])
         server_ip = data.get('server_ip') or request.host
+        # Se for localhost, detetar IP de rede automaticamente
+        if server_ip in ('127.0.0.1', 'localhost', '127.0.0.1:8080', 'localhost:8080'):
+            local_ip = get_local_ip()
+            server_ip = f"{local_ip}:8080"
 
         log(
             f"Registering version | Version={version} | "

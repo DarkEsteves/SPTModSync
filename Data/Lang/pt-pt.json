@@ -3,6 +3,7 @@
   "app_title": "SPT Mod Sync v0.6 - Beta",
   "peers": "peers · LAN/VPN",
   "publish": "Publicar",
+  "load_preset": "Carregar patch pré-feito",
   "update": "Actualizar",
   "deploy": "Publicar",
   "refresh": "Actualizar",

@@ -382,7 +382,7 @@ class Api:
             return {"ok": False, "error": str(e)}
 
     # ── Publish: cria zip + upload chunked + register ──
-    def make_patch(self, selected_paths, version):
+    def make_patch(self, selected_paths, version, changelog=""):
         global PATCH_PROGRESS
         if not selected_paths:
             return {"ok": False, "error": "Nenhum ficheiro selecionado"}
@@ -402,6 +402,19 @@ class Api:
                 self._create_zip(selected_paths, spt, progress_cb=lambda p, fn: PATCH_PROGRESS.update({"pct": p, "file": fn}), out_path=zip_path)
                 size_mb = round(os.path.getsize(zip_path) / (1024 * 1024), 1)
                 modified = time.strftime("%Y-%m-%d %H:%M:%S")
+                # Criar manifesto com lista de mods, versão, changelog e data/hora
+                manifest = {
+                    "version": version,
+                    "changelog": changelog,
+                    "selected_paths": selected_paths,
+                    "modified": modified,
+                    "size_mb": size_mb,
+                    "items": len(selected_paths),
+                }
+                # Adicionar o manifesto ao zip
+                import zipfile
+                with zipfile.ZipFile(zip_path, 'a') as zf:
+                    zf.writestr("_patch_manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
                 info = {
                     "zip_path": zip_path,
                     "filename": os.path.basename(zip_path),
@@ -409,6 +422,8 @@ class Api:
                     "items": len(selected_paths),
                     "modified": modified,
                     "version": version,
+                    "changelog": changelog,
+                    "selected_paths": selected_paths,
                 }
                 PATCH_PROGRESS = {"pct": 100, "done": True, "error": None, "info": info, "active": False}
                 _emit("patch_progress", {"pct": 100, "done": True, "info": info})
@@ -435,9 +450,44 @@ class Api:
             newest = os.path.join(PATCH_DIR, zips[0])
             size_mb = round(os.path.getsize(newest) / (1024 * 1024), 1)
             modified = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(newest)))
-            return {"exists": True, "path": newest, "filename": zips[0], "size": size_mb, "modified": modified}
+            # Tenta ler o manifesto do patch
+            manifest = self._read_patch_manifest(newest)
+            return {"exists": True, "path": newest, "filename": zips[0], "size": size_mb, "modified": modified, "manifest": manifest}
         except Exception:
             return {"exists": False, "path": ""}
+
+    def _read_patch_manifest(self, zip_path):
+        """Lê o manifesto _patch_manifest.json de um patch."""
+        try:
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                if "_patch_manifest.json" in zf.namelist():
+                    return json.loads(zf.read("_patch_manifest.json"))
+        except Exception:
+            pass
+        return None
+
+    def load_preset_patch(self, zip_path):
+        """Carrega um patch pré-feito: copia para a pasta de patches e regista."""
+        try:
+            if not os.path.isfile(zip_path):
+                return {"ok": False, "error": "Ficheiro não encontrado"}
+            os.makedirs(PATCH_DIR, exist_ok=True)
+            import shutil
+            dest = os.path.join(PATCH_DIR, os.path.basename(zip_path))
+            shutil.copy2(zip_path, dest)
+            manifest = self._read_patch_manifest(dest)
+            size_mb = round(os.path.getsize(dest) / (1024 * 1024), 1)
+            modified = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(dest)))
+            return {
+                "ok": True,
+                "path": dest,
+                "filename": os.path.basename(dest),
+                "size": size_mb,
+                "modified": modified,
+                "manifest": manifest,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
 
     def publish_from_patch(self, patch_info, version, changelog):
         if not patch_info or not patch_info.get("ok"):

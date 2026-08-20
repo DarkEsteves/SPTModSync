@@ -288,12 +288,18 @@ function autoDetectPatch() {
   // Verifica se há patch na pasta e atualiza o card + botão PUBLICAR
   if (!api()) return;
   api().patch_exists().then(pe => {
-    const card = document.getElementById('patch-info');
     const deployBtn = document.getElementById('btn-deploy');
     if (pe && pe.exists) {
       document.getElementById('patch-file').textContent = pe.filename;
       document.getElementById('patch-size').textContent = pe.size ? pe.size + ' MB' : '—';
       document.getElementById('patch-modified').textContent = pe.modified || '—';
+      // Se tem manifest, mostra info extra
+      if (pe.manifest) {
+        const m = pe.manifest;
+        if (m.version) document.getElementById('patch-version').textContent = m.version;
+        if (m.changelog) document.getElementById('patch-changelog').textContent = m.changelog;
+        if (m.selected_paths) document.getElementById('patch-items').textContent = m.selected_paths.length + ' ficheiros';
+      }
       if (deployBtn) deployBtn.disabled = false;
     } else {
       document.getElementById('patch-file').textContent = '—';
@@ -1063,12 +1069,32 @@ async function init() {
     const sel = Array.from(SMS.selected);
     if (!sel.length) { alert(t('select_files_first')); return; }
     const version = document.getElementById('publish-version').value.trim() || '1.0.0';
+    const changelog = document.getElementById('publish-changelog').value.trim();
     if (!api()) return;
     document.getElementById('patch-bar').style.width = '0%';
     document.getElementById('patch-pct').textContent = '0%';
-    const r = await api().make_patch(sel, version);
+    const r = await api().make_patch(sel, version, changelog);
     if (r && r.error) { alert(r.error); return; }
     pollPatchProgress();
+  });
+
+  document.getElementById('btn-load-preset').addEventListener('click', async () => {
+    if (!api()) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.zip';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const res = await api().load_preset_patch(file.path);
+      if (res && res.ok) {
+        alert('Patch carregado: ' + res.filename);
+        autoDetectPatch();
+      } else {
+        alert('Erro: ' + (res && res.error || 'erro'));
+      }
+    };
+    input.click();
   });
 
   document.getElementById('btn-deploy').addEventListener('click', async () => {
