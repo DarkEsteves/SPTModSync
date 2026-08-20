@@ -26,10 +26,10 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 import webview
 import requests
 
-VERSION = "v0.5"
+VERSION = "v0.6"
 GITHUB_REPO = "DarkEsteves/MyApps"
 APP_NAME = "SPT Mod Sync"
-APP_TITLE = "SPT Mod Sync v0.5 - Beta"
+APP_TITLE = "SPT Mod Sync v0.6 - Beta"
 PORT = 8765
 CHUNK_SIZE = 64 * 1024 * 1024  # 64MB (igual ao server)
 
